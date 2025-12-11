@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Faltas Possíveis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: bold;
+    }
+    input[type="number"] {
+      width: 150px;
+      padding: 5px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .resultado {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .destaque {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #e8f5e9;
+      font-weight: bold;
+    }
+    .bloco-extra {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Conversor de Carga Horária para Aulas de 45 Minutos</h1>
+
+  <label>CH Presencial (horas-relógio):</label>
+  <input type="number" id="presencial" value="0" oninput="converter()">
+
+  <label>CH Síncrona (horas-relógio):</label>
+  <input type="number" id="sincrona" value="0" oninput="converter()">
+
+  <label>CH Assíncrona (horas-relógio):</label>
+  <input type="number" id="assincrona" value="0" oninput="converter()">
+
+  <!-- BLOCO NOVO — CONVERSÃO LIVRE -->
+  <div class="bloco-extra">
+    <label>Converter carga horária livre (horas-relógio → horas-aula de 45 min):</label>
+    <input type="number" id="chLivre" value="0" oninput="converter()">
+
+    <p>
+      <em>Equivalência automática:</em>
+      <strong><span id="equivLivre">0 horas-relógio = 0 horas-aula (45 min)</span></strong>
+    </p>
+  </div>
+  <!-- FIM DO BLOCO NOVO -->
+
+  <div class="resultado" id="resultado" style="display: none;">
+    <p><strong>Presencial:</strong> <span id="aulasPresenciais"></span> aulas de 45 minutos</p>
+    <p><strong>Síncrona:</strong> <span id="aulasSincronas"></span> aulas de 45 minutos</p>
+    <p><strong>Assíncrona:</strong> <span id="aulasAssincronas"></span> aulas de 45 minutos</p>
+    <hr>
+    <p><strong>Total:</strong> <span id="aulasTotal"></span> aulas de 45 minutos</p>
+    <div class="destaque">
+      25% da soma total: <span id="aulas25"></span> aulas de 45 minutos
+    </div>
+  </div>
+
+  <script>
+    function converter() {
+      const chPresencial = parseFloat(document.getElementById('presencial').value) || 0;
+      const chSincrona   = parseFloat(document.getElementById('sincrona').value)   || 0;
+      const chAssincrona = parseFloat(document.getElementById('assincrona').value) || 0;
+
+      // Fator de conversão: 1h-relógio = 4/3 horas-aula de 45 min
+      const fator = 60 / 45;
+
+      const aulasPresenciais = chPresencial * fator;
+      const aulasSincronas   = chSincrona   * fator;
+      const aulasAssincronas = chAssincrona * fator;
+
+      // NOVO CAMPO — CONVERSÃO LIVRE
+      const chLivre = parseFloat(document.getElementById("chLivre").value) || 0;
+      const aulasLivre = chLivre * fator;
+
+      document.getElementById("equivLivre").textContent =
+        `${chLivre.toFixed(2)} horas-relógio = ${aulasLivre.toFixed(2)} horas-aula (45 min)`;
+
+      const totalAulas = aulasPresenciais + aulasSincronas + aulasAssincronas;
+      const total25 = totalAulas * 0.25;
+
+      if (totalAulas <= 0) {
+        document.getElementById('resultado').style.display = "none";
+        return;
+      }
+
+      document.getElementById('aulasPresenciais').textContent = aulasPresenciais.toFixed(2);
+      document.getElementById('aulasSincronas').textContent   = aulasSincronas.toFixed(2);
+      document.getElementById('aulasAssincronas').textContent = aulasAssincronas.toFixed(2);
+      document.getElementById('aulasTotal').textContent       = totalAulas.toFixed(2);
+      document.getElementById('aulas25').textContent          = total25.toFixed(2);
+
+      document.getElementById('resultado').style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
